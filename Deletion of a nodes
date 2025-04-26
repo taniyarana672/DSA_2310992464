@@ -1,0 +1,96 @@
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class Main {
+    static class TreeNode {
+        int data;
+        TreeNode left, right;
+        TreeNode(int val) {
+            data = val;
+            left = right = null;
+        }
+    }
+
+    // Function to delete a node
+    public static void delete(TreeNode root, int key) {
+        if (root == null) return;
+
+        if (root.left == null && root.right == null) {
+            if (root.data == key) {
+                root = null;
+            }
+            return;
+        }
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        TreeNode temp = null, keyNode = null;
+
+        // Level order traversal to find keyNode and last node
+        while (!queue.isEmpty()) {
+            temp = queue.poll();
+            if (temp.data == key) {
+                keyNode = temp;
+            }
+            if (temp.left != null) queue.add(temp.left);
+            if (temp.right != null) queue.add(temp.right);
+        }
+
+        if (keyNode != null) {
+            int x = temp.data; // temp holds the last node
+            deleteDeepest(root, temp);
+            keyNode.data = x;
+        }
+    }
+
+    // Function to delete the deepest node
+    public static void deleteDeepest(TreeNode root, TreeNode delNode) {
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            TreeNode temp = queue.poll();
+            if (temp == delNode) {
+                temp = null;
+                return;
+            }
+            if (temp.left != null) {
+                if (temp.left == delNode) {
+                    temp.left = null;
+                    return;
+                } else queue.add(temp.left);
+            }
+            if (temp.right != null) {
+                if (temp.right == delNode) {
+                    temp.right = null;
+                    return;
+                } else queue.add(temp.right);
+            }
+        }
+    }
+
+    public static void inorder(TreeNode root) {
+        if (root == null) return;
+        inorder(root.left);
+        System.out.println(root.data + " ");
+        inorder(root.right);
+    }
+
+    public static void main(String[] args) {
+        TreeNode root = new TreeNode(10);
+        root.left = new TreeNode(20);
+        root.right = new TreeNode(30);
+        root.left.left = new TreeNode(40);
+        root.left.right = new TreeNode(50);
+        root.right.left = new TreeNode(60);
+        root.right.right = new TreeNode(70);
+
+        System.out.println("Inorder traversal before deletion:");
+        inorder(root);
+
+        delete(root, 50);
+
+        System.out.println("Inorder traversal after deletion:");
+        inorder(root);
+    }
+}
